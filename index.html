@@ -131,7 +131,7 @@
         frameRateThrottleWhenIdleEnabled: true,
         throttledTargetFrameIntervalMilliseconds: 500,
         idleSecondsBeforeFrameRateThrottle: 15.0,
-        coverageTreeManifest: "https://webgl-cdn1.wrld3d.com/chunk/indoor_maps/api_requests/EIM-8de91e7e-1f90-4c41-b0ee-6845c5029c3b_2022_02_10_20_51_57/webgl_manifest.bin.gz"
+        coverageTreeManifest: "https://webgl-cdn1.wrld3d.com/chunk/indoor_maps/api_requests/EIM-8de91e7e-1f90-4c41-b0ee-6845c5029c3b_2022_02_14_23_48_27/webgl_manifest.bin.gz"
         //indoorMapBackgroundColor: "#3d4447"
       });
 
@@ -201,11 +201,10 @@
           legends: []
       });
 
-
-        // create the sidebar instance and add it to the map
-        var sidebar = L.control.sidebar({ container: 'sidebar' })
-        .addTo(map)
-        .open('home');
+    // create the sidebar instance and add it to the map
+    var sidebar = L.control.sidebar({ container: 'sidebar' })
+    .addTo(map)
+    .open('home');
 
       function hideshowLayer(e){
         if(e.checked) {
@@ -255,6 +254,7 @@
               currentDataforSchool[i].bg = '#cccccc';
             }
             var color = hexToRgb(currentDataforSchool[i].bg);
+            
             if(color) {
               map.indoors.setEntityHighlights([currentDataforSchool[i].sn], [color.r, color.g, color.b, 190], "EIM-8de91e7e-1f90-4c41-b0ee-6845c5029c3b", 1);
             }
