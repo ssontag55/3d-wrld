@@ -1,0 +1,117 @@
+  body {
+    color: #4e4a4a;
+  }
+  #map { height: calc(98% - 29px);width: 99%; position: fixed;}
+    .loading-screen {
+      position: absolute;
+      right: 0px;
+      left: 0px;
+      top: 20px;
+      display: none;
+      bottom: 0px;
+      color:  white;
+      z-index: 150;
+      background-color: none;
+      height: 400px;
+    }
+
+  .hidden {
+    visibility: hidden;
+  }
+  h4 {
+    margin: 2px !important;
+  }
+  .loading-text {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    height: inherit;
+    font-family: amsibold,'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  }
+
+  .wrld-widget-container {
+    height: 380px;
+    top: 50px !important;
+  }
+  .eegeo-indoor-control {
+    height:  380px;
+  }
+  .eegeo-indoor-control {
+    height: 380px;
+  }
+  .eegeo-floor-slider {
+    height: 314px;
+  }
+  .eegeo-indoor-control #eegeo-exit-interior-button-container { 
+    /*visibility: hidden;*/
+  }
+
+  .legend {
+    padding: 6px 8px;
+    font: 14px Arial, Helvetica, sans-serif;
+    background: white;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.9);
+    /*box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);*/
+    /*border-radius: 5px;*/
+    line-height: 24px;
+    color: #555;
+  }
+  .legend h4 {
+    text-align: center;
+    font-size: 16px;
+    margin: 2px 12px 8px;
+    color: #777;
+  }
+
+  .legend span {
+    position: relative;
+    bottom: 3px;
+  }
+
+  .legend i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin: 0 8px 0 0;
+    opacity: 0.7;
+  }
+
+  .infoPanel {
+    padding: 6px 8px;
+    background: white;
+    border-radius: 4px;
+    background: rgba(255, 255, 255);
+    /*box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);*/
+    /*border-radius: 5px;*/
+    line-height: 24px;
+    color: #555;
+  }
+  .infoPanel h5 {
+    text-align: center;
+    font-size: 13px;
+    margin: 1px 12px -4px;
+    color: #777;
+  }
+
+  .infoPanel h6 {
+    text-align: center;
+    font-size: 11px;
+    margin: 1px 12px 3px;
+    color: #777;
+  }
+
+  .infoPanel span {
+    position: relative;
+    bottom: 3px;
+  }
+
+  .infoPanel i {
+    width: 13px;
+    height: 13px;
+    float: left;
+    border-radius: 7px;
+    margin: 0 8px 0 0;
+    opacity: 0.7;
+  }
