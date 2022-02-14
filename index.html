@@ -1,56 +1,128 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
-  <head>
+<head>
+    <title>TerraBase 3D</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <script src="https://unpkg.com/wrld.js@1.x.x"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.1/leaflet.css" rel="stylesheet" />
     <link href="leaflet.legend.css" rel="stylesheet" />
     <link href="style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="leaflet-sidebar.css" />
     <link href="https://cdn-webgl.wrld3d.com/wrldjs/addons/resources/v1/latest/css/wrld.css" rel="stylesheet"/>
     
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
     <script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/indoor_control/v1/latest/indoor_control.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
-    <!-- <script src="https://livejs.com/live.js"></script> -->
     <script src="leaflet.legend.js"></script>
     <script src="exceedance.js"></script>
 
-    <title>TerraBase 3D</title>
-  </head>
-  <body>
-      <div style="position: relative;height: 100%;margin-top:-20px">
-      <div id="loading-screen" class="loading-screen">
-        <div class="loading-text">Loading...</div>
-      </div>
-      <div style="display:none;float:right;font-size: 14px;" id="showhidediv">
-        <input type="checkbox" id="showhide" onchange="hideshowLayer(this)" name="Show Live Data"
-               checked>
-        <label for="showhide">Toggle Live Data</label>
-      </div>
-      <div id="topRightButtons" style="float:right;width:'300px'">
-        <select disabled name="Parameters" id="params">
-          <option value="temp">Temperature</option>
-          <option value="humidity">Relative Humidity</option>
-          <option value="co">Carbon Monoxide</option>
-          <option value="co2">Carbon Dioxide</option>          
-          <option value="pm_10">Particulate Pollution 10</option>
-          <option value="pm_2_5">Particulate Pollution 2.5</option>
-        </select>
-        <button type="button" id='exitBut' style="float:right;margin-left: 3px;" disabled onclick="exitIndoor()">Exit Indoor Map</button>
-        <div id='showingFloor' style="font-size: 12px;float: right;margin-top: 24px;margin-right: -110px;">Click Blue Icon to View inside</div>
-      </div>
-      <div style="width: 200px;position: absolute;">
-        <h4>Another Course To College</h4>
-      </div>
-      <div style="width: 200px;margin-left: 240px;top: 4px;position: relative;">
-        <h6>Note: Right Click to rotate, CTRL to Tilt</h6>
-      </div>
-      <div id="widget-container" class="wrld-widget-container"></div>
-      <div id="map"></div>
-      <script>
+    <script src="https://livejs.com/live.js"></script>
 
-      var map = Wrld.map("map", "5b3e8893f829b06ab7b2e619a9bdd506", {
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+            font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
+        }
+
+        .lorem {
+            font-style: italic;
+            text-align: justify;
+            color: #AAA;
+        }
+    </style>
+</head>
+<body>
+    <!-- optionally define the sidebar content via HTML markup -->
+    <div id="sidebar" class="leaflet-sidebar collapsed">
+
+        <!-- nav tabs -->
+        <div class="leaflet-sidebar-tabs">
+            <!-- top aligned tabs -->
+            <ul role="tablist">
+                <li><a href="#home" role="tab"><i class="fa fa-bars active"></i></a></li>
+                <li><a href="#autopan" role="tab"><i class="fa fa-globe"></i></a></li>
+            </ul>
+
+            <!-- bottom aligned tabs -->
+            <ul role="tablist">
+                <li><a href="http://terrabase.com" target="_new"><i class="fa fa-link"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- panel content -->
+        <div class="leaflet-sidebar-content">
+            <div class="leaflet-sidebar-pane" id="home">
+                <h1 class="leaflet-sidebar-header">
+                    BPS 3D
+                    <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+                <h2>Another Course To College</h2>
+                
+                <p>3D Representation of the main <a href="https://dev-bostonschoolsiaq.terrabase.com/">Air Quality Site</a>.</p>
+
+                <img src="liveview3.png"></img>
+                <p class="lorem">To Begin, Click Blue Icon to Zoom into School.</p>
+                <h2>Tips</h2>
+                <ul>
+                    <li>Use your Right mouse button to Rotate map</li>
+                    <li>Use the CTRL Button on your keyboard to Change the Tilt on the Map</li>
+                    <li><b>Zoom To Library (on first floor) to see additional Assets that could be added to the room</b></li>
+                </ul>
+                <div style="display:none;font-size: 14px;" id="showhidediv">
+                  <p class="lorem">Select Paramater in Drop down to Visualize Current Values</p>
+                  <div id="topRightButtons" style="width:'300px'">
+                    <select name="Parameters" id="params">
+                      <option value="temp">Temperature</option>
+                      <option value="humidity">Relative Humidity</option>
+                      <option value="co">Carbon Monoxide</option>
+                      <option value="co2">Carbon Dioxide</option>          
+                      <option value="pm_10">Particulate Pollution 10</option>
+                      <option value="pm_2_5">Particulate Pollution 2.5</option>
+                    </select>
+                    <button type="button" id='exitBut' style="float:right;margin-left: 3px;" disabled onclick="exitIndoor()">Exit Indoor Map</button>
+                    <div id='showingFloor' style="font-size: 12px;float: right;margin-top: 24px;margin-right: -110px;">Click Blue Icon to View inside</div>
+                  </div>
+                  <input type="checkbox" id="showhide" onchange="hideshowLayer(this)" name="Show Live Data"
+                           checked>
+                    <label for="showhide">Toggle Live Data</label>
+                  </div>
+            </div>
+
+            <div class="leaflet-sidebar-pane" id="autopan">
+                <h1 class="leaflet-sidebar-header">
+                    More Info
+                    <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+                </h1>
+                <p>
+                    <code></code>3D Indoor Mapping provides context to real time Air Quality Infromation. Using recently Collected Floor plans, TerraBase processes data into 3D floor plans.
+                </p>
+                <p>
+                    Click the Blue Icon to enter School Building.  Use the Floor Selector on the right side to change floors.
+                </p>
+            </div>
+
+            <!-- <div class="leaflet-sidebar-pane" id="messages">
+                <h1 class="leaflet-sidebar-header">Messages<span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span></h1>
+            </div> -->
+        </div>
+    </div>
+
+    <div id="widget-container" class="wrld-widget-container"></div>
+    <div id="map"></div>
+
+    <script src="leaflet-sidebar.js"></script>
+
+    <script>
+        var map = Wrld.map("map", "5b3e8893f829b06ab7b2e619a9bdd506", {
         center: [42.265608, -71.117575],
         indoorsEnabled: true,
         //drawClearColor: "#3d4447",
@@ -71,7 +143,6 @@
           [0, 255, 0, 128],
           [0, 0, 255, 128]
       ];
-
 
       var infoPanel = L.control({ position: "bottomleft" });
 
@@ -130,6 +201,12 @@
           legends: []
       });
 
+
+        // create the sidebar instance and add it to the map
+        var sidebar = L.control.sidebar({ container: 'sidebar' })
+        .addTo(map)
+        .open('home');
+
       function hideshowLayer(e){
         if(e.checked) {
           updateRoomHighlite();
@@ -180,7 +257,10 @@
             var color = hexToRgb(currentDataforSchool[i].bg);
             if(color) {
               map.indoors.setEntityHighlights([currentDataforSchool[i].sn], [color.r, color.g, color.b, 190], "EIM-8de91e7e-1f90-4c41-b0ee-6845c5029c3b", 1);
-            }        
+            }
+            else {
+                console.log('missing color');
+            }      
           }
         }
         createLegend();
@@ -377,6 +457,5 @@
       map.indoors.on("indoormapexit", exitIndoor);
       // map.indoorMapEntities.on("indoormapentityinformationchanged", onIndoorMapEntityInformationChanged);
     </script>
-  </div>
-  </body>
+</body>
 </html>
