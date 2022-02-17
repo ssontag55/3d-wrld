@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TerraBase Water 3D</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <script src="https://unpkg.com/wrld.js@1.x.x"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.1/leaflet.css" rel="stylesheet" />
+    <link href="leaflet.legend.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+    <link href="https://cdn-webgl.wrld3d.com/wrldjs/addons/resources/v1/latest/css/wrld.css" rel="stylesheet"/>
+    
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+    <script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/indoor_control/v1/latest/indoor_control.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/marker_controller/v1/latest/marker_controller.js"></script>
+
+    <!-- <script src="https://livejs.com/live.js"></script> -->
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body, #map {
+            height: 100%;
+            font: 10pt "Helvetica Neue", Arial, Helvetica, sans-serif;
+        }
+
+        .lorem {
+            font-style: italic;
+            text-align: justify;
+            color: #AAA;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="widget-container" class="wrld-widget-container"></div>
+    <div id="map"></div>
+
+    <script>
+      var map = Wrld.map("map", "5b3e8893f829b06ab7b2e619a9bdd506", 
+      {
+        center: [42.265608, -71.117575],
+        indoorsEnabled: true,
+        //drawClearColor: "#3d4447",
+        zoom: 18,
+        trafficEnabled: false,
+        frameRateThrottleWhenIdleEnabled: true,
+        throttledTargetFrameIntervalMilliseconds: 500,
+        idleSecondsBeforeFrameRateThrottle: 15.0,
+        coverageTreeManifest: "https://webgl-cdn1.wrld3d.com/chunk/indoor_maps/api_requests/EIM-9ee4ff85-1af3-4165-8a7a-7e1aaa485f7b_2022_02_17_14_51_01/webgl_manifest.bin.gz"
+        //indoorMapBackgroundColor: "#3d4447"
+      });
+
+      var currentDataforSchool = [];
+
+      var infoPanel = L.control({ position: "bottomleft" });
+      
+      var markers = [];
+      var indoorControl = new WrldIndoorControl("widget-container", map);
+
+      var markerController = new WrldMarkerController(map, { poiViewsEnabled: true });
+
+      setTimeout(function() {
+        map.setView([42.26526666044489, -71.11785107146238], 21, {
+          headingDegrees: 101,
+          durationSeconds:7
+        });
+        
+        //var t = map.props.getIndoorMapEntitySetProps("EIM-9ee4ff85-1af3-4165-8a7a-7e1aaa485f7b");
+
+        $.get('assets.csv', function(csvString) {
+          var data = Papa.parse(csvString, {header: true, dynamicTyping: true}).data;
+          for (var i in data) {
+            var row = data[i];
+
+            if(row.Latitude && row.Longitude) {
+               var markerOptions = {
+                indoorMapId: "EIM-9ee4ff85-1af3-4165-8a7a-7e1aaa485f7b", 
+                indoorMapFloorIndex: row.floorid, 
+                poiView: {
+                  title: row.name,
+                  customView: "template.html",
+                  customViewHeight: 365
+                },
+                iconKey: "water_meter"
+              };
+
+              //https://www.wrld3d.com/wrld.js/latest/docs/api/Widgets/WrldMarkerController/#iconkey-values
+              var marker = markerController.addMarker(i, [row.Latitude, row.Longitude], markerOptions);
+            }
+          }
+        });
+      }, 3000);
+    
+      function exitIndoor() {
+        map.indoors.exit();
+        
+        if (legend !== null) {
+          legend.remove();
+          legend = null;
+        }
+
+        if (infoPanel !== null) {
+          infoPanel.remove();
+          infoPanel = null;
+        } 
+      }
+
+      function onIndoorMapfloorChange (event) {
+        console.log('Showing: '+event.floor._floorName);
+      }
+
+      function onIndoorMapEntityInformationChanged(event) {
+        var indoorMapEntityInformation = event.indoorMapEntityInformation;
+
+        var indoorMapId = indoorMapEntityInformation.getIndoorMapId();
+        var loadState = indoorMapEntityInformation.getLoadState();
+        var indoorMapEntities = indoorMapEntityInformation.getIndoorMapEntities();
+      
+        indoorMapEntities.forEach(function(entity) {
+          var indoorMapEntityId = entity.getIndoorMapEntityId();
+          var indoorMapFloorId = entity.getIndoorMapFloorId();
+          var position = entity.getPosition();
+          
+          //addMarker(position, indoorMapEntityId, indoorMapId, indoorMapFloorId);
+        });
+      }
+
+      function onInitialStreamingComplete() {
+        map.indoors.enter("EIM-9ee4ff85-1af3-4165-8a7a-7e1aaa485f7b");
+        Wrld.indoorMapEntities.indoorMapEntityInformation("EIM-9ee4ff85-1af3-4165-8a7a-7e1aaa485f7b").addTo(map);
+      }
+
+      function highlight(id) {
+        map.indoors.setEntityHighlights(id, [204, 0, 0, 200]);
+      }
+
+      function createLegend() {
+      }
+
+      function sortJSON(arr, key, way) {
+        return arr.sort(function (a, b) {
+          var x = a[key]; var y = b[key];
+          if (way === '123') { return ((x < y) ? -1 : ((x > y) ? 1 : 0)); }
+          if (way === '321') { return ((x > y) ? -1 : ((x < y) ? 1 : 0)); }
+        });
+      }
+      
+      function onIndoorMapEntered() { }
+
+      function onIndoorEntityClicked(event) {
+
+        if (infoPanel !== null) {
+          infoPanel.remove();
+          infoPanel = null;
+        }
+
+        map.indoors.clearEntityHighlights();
+
+        highlight(event.ids[0]);
+        
+        /*infoPanel = L.control({ position: "bottomleft" });
+
+        var roomNumber = "";
+        var currentTime = "";
+        var htmlValues = "";
+
+        infoPanel.onAdd = function(map) {
+          var div = L.DomUtil.create("div", "infoPanel");
+          div.innerHTML += "<h5>"+roomNumber+"</h5>";
+          div.innerHTML += "<h6>"+currentTime+"</h6>";
+          div.innerHTML += htmlValues;
+          
+          return div;
+        };
+
+        infoPanel.addTo(map);*/
+      }
+
+      map.on("initialstreamingcomplete", onInitialStreamingComplete);
+      // indoor events
+      map.indoors.on("indoormapenter", onIndoorMapEntered);
+      map.indoors.on("indoormapfloorchange", onIndoorMapfloorChange);
+      map.indoors.on("indoorentityclick", onIndoorEntityClicked);
+      map.indoors.on("indoormapexit", exitIndoor);
+      map.indoorMapEntities.on("indoormapentityinformationchanged", onIndoorMapEntityInformationChanged);
+
+      map.on('rotateend', function(e){
+        console.log('Zoom: ' + e.target.getZoom())
+        console.log('degrees: ' + e.target.getCameraHeadingDegrees())
+        console.log('Center: ' + e.target.getCenter())
+      });
+    </script>
+</body>
+</html>

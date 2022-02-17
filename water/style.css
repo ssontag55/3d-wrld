@@ -18,12 +18,14 @@
   .hidden {
     visibility: hidden;
   }
-  h4 {
-    margin: 2px !important;
-  }
-
   .wrld-indoor-map-watermark {
     display: none !important;
+  }
+  #wrld-indoor-map-watermark0 {
+    display: none !important;
+  }
+  h4 {
+    margin: 2px !important;
   }
   .loading-text {
     display: flex;

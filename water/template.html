@@ -1,0 +1,71 @@
+<html>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+        <meta charset="utf-8">
+        <style>
+            table {
+                border-collapse: collapse;
+                border: 1px black solid;
+                font: 10px sans-serif;
+                color: #555;
+            }
+
+            td {
+                border: 1px black solid;
+                padding: 4px;
+            }
+            table tr:first-child td {
+                background-color: #FFFF66;
+                font-weight: bold;
+            }
+        </style>
+  </head>
+  <body>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script>
+      function loadTable() {
+        d3.text("values.csv", function(data) {
+            var parsedCSV = d3.csv.parseRows(data).filter(function (d) {
+              if(d[0] === sensorName || d[0] == 'Location ID') {
+                return d;
+              }
+            });
+
+            var container = d3.select("#tableDiv")
+              .append("table")
+              .selectAll("tr")
+                  .data(parsedCSV).enter()
+                  .append("tr")
+              .selectAll("td")
+                  .data(function(d) { return d; }).enter()
+                  .append("td")
+                  .text(function(d) { return d; });
+
+            document.getElementById("loading").style.display = "none";
+        });
+      }
+
+      var url_string = window.location.href
+      var url = new URL(url_string);
+      var c = url.searchParams.get("poi");
+
+      var sensorName = JSON.parse(c).user_data.title.split(' ')[0];
+
+      try {
+        if (d3 != undefined) {
+          loadTable();
+        }
+      } catch (err) {
+        setTimeout(loadTable, 3500);
+      }
+
+    </script>
+
+    <!-- <img src="terrabase.png" alt="Terrabase" style="width: 50px; float: right"> -->
+    
+    <label id='loading'>Loading Table Data</label>
+    <div id='tableDiv' style="margin-top:-8px">
+    </div>
+  </body>
+</html>
