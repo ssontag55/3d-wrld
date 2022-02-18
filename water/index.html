@@ -73,7 +73,7 @@
           durationSeconds:7
         });
         
-        //var t = map.props.getIndoorMapEntitySetProps("EIM-9ee4ff85-1af3-4165-8a7a-7e1aaa485f7b");
+        var indoorAssets = map.props.getIndoorMapEntitySetProps("EIM-9ee4ff85-1af3-4165-8a7a-7e1aaa485f7b", 1);
 
         $.get('assets.csv', function(csvString) {
           var data = Papa.parse(csvString, {header: true, dynamicTyping: true}).data;
